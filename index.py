@@ -1,79 +1,55 @@
-#i am importing the python tkinter gui libary
-#for this project i am building a calculator app
-from tkinter import *
+import tkinter as tk
 
+def add_task():
+    task = entry_task.get()
+    if task:
+        listbox_tasks.insert(tk.END, task)
+        entry_task.delete(0, tk.END)
 
+def remove_task():
+    try:
+        task_index = listbox_tasks.curselection()[0]
+        listbox_tasks.delete(task_index)
+    except IndexError:
+        pass
 
-#i created a function called frame for later use in my code
-#this function has 2 parameter a root and side
-def frame(root, side):
-    w = Frame(root)
-    w.pack(side=side, expand=YES, fill=BOTH)
-    return w
+def complete_task():
+    try:
+        task_index = listbox_tasks.curselection()[0]
+        listbox_tasks.itemconfig(task_index, {'bg': 'light gray'})
+    except IndexError:
+        pass
 
+# Create the main window
+root = tk.Tk()
+root.title("To-Do List")
 
+# Set the icon
+root.iconbitmap('ico.ico')  # Change 'icon.ico' to the path of your icon file
 
-#i also created a button function that will later be use a components it has 4 arguments
-def button(root, side, text, command=None):
-    w = Button(root, text=text, command=command)
-    w.pack(side=side, expand=YES, fill=BOTH)
-    return w
+# Create and pack the necessary widgets
+frame_tasks = tk.Frame(root)
+frame_tasks.pack()
 
-#i created a class calculator that will automate the entire application structure
-class Calculator(Frame):
-    def __init__(self):
-        Frame.__init__(self)
-        self.pack(expand=YES, fill=BOTH)
-        self.master.title('simple calculator')
-        self.master.iconname("calc")
+listbox_tasks = tk.Listbox(frame_tasks, height=10, width=50)
+listbox_tasks.pack(side=tk.LEFT)
 
-        display = StringVar()
-        Entry(self, relief=SUNKEN, textvariable=display).pack(side=TOP, expand=YES, fill=BOTH)
+scrollbar_tasks = tk.Scrollbar(frame_tasks)
+scrollbar_tasks.pack(side=tk.RIGHT, fill=tk.Y)
 
+listbox_tasks.config(yscrollcommand=scrollbar_tasks.set)
+scrollbar_tasks.config(command=listbox_tasks.yview)
 
-        for key in ("123", "456", "789", "-0 ."):
-            keyF = frame(self,  TOP)
-            for char in key:
-                button(keyF, LEFT, char, lambda w = display,  s=' %s '%char: w.set(w.get()+s))
+entry_task = tk.Entry(root, width=50)
+entry_task.pack()
 
-        opsF = frame(self, TOP)
-        for char  in "+-*/=":
-            if char == "=":
-                btn = button(opsF, LEFT, char)
-                btn.bind('<ButtonRelease-1>',lambda e, s=self, w=display: s.calc(w), '+')
-            else:
-                 btn = button(opsF, LEFT, char,lambda w=display, c=char: w.set(w.get()+' '+c+' '))
+button_add_task = tk.Button(root, text="Add Task", width=48, command=add_task)
+button_add_task.pack()
 
+button_remove_task = tk.Button(root, text="Remove Task", width=48, command=remove_task)
+button_remove_task.pack()
 
+button_complete_task = tk.Button(root, text="Complete Task", width=48, command=complete_task)
+button_complete_task.pack()
 
-
-        clearF = frame(self, BOTTOM)
-        button(clearF, LEFT, 'Clr', lambda w=display: w.set(''))
-
-
-    def calc(self, display):
-        try: 
-            display.set(eval(display.get()))
-        except ValueError:
-            display.set("ERROR")
-
-
-
-
-
-
-
-if __name__ == '__main__':
-  Calculator().mainloop()
-# window = Tk()
-# window.geometry("300x300")
-# window.title("calculator app")
-# # label = Label(window, text="ADNET", fg="white", bg="blue", relief="solid", font=("arial"))
-# # label.pack(fill=BOTH, pady=2, padx=2, expand=True)
-
-# label = Label(window, text="ADNET", fg="white", bg="blue", relief="solid", font=("arial"), height=5)
-# label.pack(fill=BOTH, pady=2, padx=2,)
-
-
-
-# window.mainloop()
+root.mainloop()
